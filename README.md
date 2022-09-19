@@ -6,4 +6,6 @@ user:pass:ip:port
 
 ip:port
 
-# Supports only HTTP/HTTPS Proxys
+
+# Supports only HTTP/HTTPS Proxys or Proxyless
+Can only generate 1 code every hour or so/ per new ip with proxyless
