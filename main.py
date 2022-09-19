@@ -1,3 +1,4 @@
+from socket import getaddrinfo
 from urllib import request
 import aiohttp, asyncio, sys, os, time
 from requests.structures import CaseInsensitiveDict
@@ -40,7 +41,7 @@ class main(object):
             else:
                 os.system("cls")
 
-            print("\033[0m╥\n\033[0m║ \033[4m\033[92mZap Code Generator\n\033[0m║\n\033[0m║\033[4m\033[34mProxy Type\033[0m\n\033[0m║\n\033[0m╠► \033[4m1.Auth\033[0m\n\033[0m╠► \033[4m2.No Auth\n\033[0m║")
+            print("\033[0m╥\n\033[0m║ \033[4m\033[92mZap Code Generator\n\033[0m║\n\033[0m║\033[4m\033[34mProxy Type\033[0m\n\033[0m║\n\033[0m╠► \033[4m1.Auth\033[0m\n\033[0m╠► \033[4m2.No Auth\n\033[0m╠► \033[4m3.Proxyless (CAN ONLY GEN 1 PER IP/ ZAPS COOL DOWN)\n\033[0m║")
             self.proxy_type = input("╚► ")
 
             if self.proxy_type == ("1"):
@@ -58,6 +59,8 @@ class main(object):
                     ip = x.split(":")[0]
                     port = x.split(":")[1]
                     self.client_proxy = (f"http://{ip}:{port}")
+            elif self.proxy_type == ("3"):
+                self.client_proxy = None
             else:
                 print("\nInvalid Proxy Type")
                 sys.exit()
@@ -70,9 +73,13 @@ class main(object):
                 os.system("clear")
             else:
                 os.system("cls")
-            amount = int(self.gen_amount)
-            print(f"\033[0m╥\n\033[0m║ \033[4m\033[92mZap Code Generator\n\033[0m║\n\033[0m╠► Generating {amount} Codes\n\033[0m╨")
-            for x in range(amount):
+            
+            if self.proxy_type == ("3"):
+                self.amount = 1
+            else:
+                self.amount = int(self.gen_amount)
+            print(f"\033[0m╥\n\033[0m║ \033[4m\033[92mZap Code Generator\n\033[0m║\n\033[0m╠► Generating {self.amount} Codes\n\033[0m╨")
+            for x in range(self.amount):
                 async with aiohttp.ClientSession() as session:
                     async with session.post(url, headers=headers, data=data, proxy=self.client_proxy, ssl=False) as resp:
                         result = await resp.json(content_type='text/html')
@@ -85,7 +92,7 @@ class main(object):
                 os.system("clear")
             else:
                 os.system("cls")
-            print(f"\033[0m╥\n\033[0m║ \033[4m\033[92mZap Code Generator\n\033[0m║\n\033[0m╠► Finished Generating {amount} Codes\n\033[0m╨")
+            print(f"\033[0m╥\n\033[0m║ \033[4m\033[92mZap Code Generator\n\033[0m║\n\033[0m╠► Finished Generating {self.amount} Codes\n\033[0m╨")
 
                         
         except Exception as e:
