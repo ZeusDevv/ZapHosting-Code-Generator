@@ -1,8 +1,9 @@
 from socket import getaddrinfo
+from unittest import async_case
 from urllib import request
 import aiohttp, asyncio, sys, os, time
 from requests.structures import CaseInsensitiveDict
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientTimeout
 
 url = "https://zap-hosting.com/interface/shop/_ajax/json_getExitIntentCoupon.php"
 
@@ -74,20 +75,22 @@ class main(object):
             else:
                 os.system("cls")
             
-            if self.proxy_type == ("3"):
-                self.amount = 1
-            else:
-                self.amount = int(self.gen_amount)
+
+            self.amount = int(self.gen_amount)
+            timeout = ClientTimeout(total=300) # 0 is to disable any timeouts
             print(f"\033[0m╥\n\033[0m║ \033[4m\033[92mZap Code Generator\n\033[0m║\n\033[0m╠► Generating {self.amount} Codes\n\033[0m╨")
             for x in range(self.amount):
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(url, headers=headers, data=data, proxy=self.client_proxy, ssl=False) as resp:
-                        result = await resp.json(content_type='text/html')
-                        code = result["data"]["code"]
-                        with open ("codes.txt", "a+") as f:
-                            f.write(code + "\n")
-                            f.close
-                        await aiohttp.ClientSession().close()
+                try:
+                    async with aiohttp.ClientSession(trust_env=True) as session:
+                        async with session.post(url, headers=headers, data=data, proxy=self.client_proxy, timeout=timeout, ssl=False,  ) as resp:
+                            result = await resp.json(content_type=None)
+                            code = result["data"]["code"]
+                            with open ("codes.txt", "a+") as f:
+                                f.write(code + "\n")
+                                f.close
+                            await aiohttp.ClientSession().close()
+                except Exception as e:
+                    print(f"Generating Zap Codes Had an issue -> {e}")
             if sys.platform == "linux":
                 os.system("clear")
             else:
@@ -100,4 +103,4 @@ class main(object):
 
 if __name__ == "__main__":
     start = main()
-    asyncio.run(start.request())
+    asyncio.get_event_loop().run_until_complete(start.request())
